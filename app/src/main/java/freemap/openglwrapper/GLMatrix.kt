@@ -2,7 +2,7 @@ package freemap.openglwrapper
 
 import android.opengl.Matrix
 
-class GLMatrix(val values: FloatArray = floatArrayOf(1f,0f,0f,0f,0f,1f,0f,0f,0f,0f,1f,0f,0f,0f,0f,1f)) {
+class GLMatrix(var values: FloatArray = floatArrayOf(1f,0f,0f,0f,0f,1f,0f,0f,0f,0f,1f,0f,0f,0f,0f,1f)) {
 
     val axes = mapOf('x' to floatArrayOf(1.0f, 0.0f, 0.0f), 'y' to floatArrayOf(0.0f, 1.0f, 0.0f), 'z' to floatArrayOf(0.0f, 0.0f, 1.0f))
 

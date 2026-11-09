@@ -2,11 +2,8 @@ package freemap.openglwrapper
 
 import android.content.res.AssetManager
 import android.graphics.BitmapFactory
-import android.opengl.GLES11Ext
 import android.opengl.GLES20
 import android.opengl.GLUtils
-import android.opengl.Matrix
-import android.util.Log
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.nio.ByteBuffer
@@ -36,7 +33,7 @@ object OpenGLUtils {
         return sbuf
     }
 
-    fun loadShader(assets: AssetManager, filename: String): String {
+    fun loadTextAsset(assets: AssetManager, filename: String): String {
         val file = assets.open(filename)
         val reader = BufferedReader(InputStreamReader(file))
         var code = ""

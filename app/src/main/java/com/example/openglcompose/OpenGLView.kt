@@ -23,9 +23,12 @@ class OpenGLView(val ctx: Context)  :GLSurfaceView(ctx), GLSurfaceView.Renderer 
     var refUProjMtx = -1
     val red = floatArrayOf(1.0f, 0.0f, 0.0f, 1.0f)
     val yellow = floatArrayOf(1.0f, 1.0f, 0.0f, 1.0f)
+    val blue = floatArrayOf(0.0f, 0.0f, 1.0f, 1.0f)
+    val green = floatArrayOf(0.0f, 1.0f, 0.0f, 1.0f)
 
     val viewMatrix = GLMatrix()
     val projMatrix = GLMatrix()
+
 
     // We initialise the rendering here
     override fun onSurfaceCreated(unused: GL10, config: EGLConfig) {
@@ -42,13 +45,20 @@ class OpenGLView(val ctx: Context)  :GLSurfaceView(ctx), GLSurfaceView.Renderer 
             if(!gpu.loadShaders(ctx.assets, "vertex.glsl", "fragment.glsl")) {
                 Log.e("OpenGL01", gpu.lastShaderError)
             } else {
+                // Four triangles, two (red and yellow) towards negative z, two (blue and green) towards positive z
                 val coords = floatArrayOf (
                     0f, 0f,-3f,
                     1f, 0f, -3f,
                     0.5f, 1f, -3f,
                     -0.5f, 0f, -6f,
                     0.5f, 0f, -6f,
-                    0f, 1f, -6f
+                    0f, 1f, -6f,
+                    0f, 0f,3f,
+                    0.5f, 1f, 3f,
+                    1f, 0f, 3f,
+                    0.5f, 0f, 6f,
+                    -0.5f, 0f, 6f,
+                    0f, 1f, 6f
                         )
                 val fbuf = OpenGLUtils.makeFloatBuffer(coords)
 
@@ -69,6 +79,7 @@ class OpenGLView(val ctx: Context)  :GLSurfaceView(ctx), GLSurfaceView.Renderer 
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT or GLES20.GL_DEPTH_BUFFER_BIT)
 
         viewMatrix.setAsIdentityMatrix()
+
         gpu.sendMatrix(refUViewMtx, viewMatrix)
 
         if(refUColour >= 0) {
@@ -76,6 +87,10 @@ class OpenGLView(val ctx: Context)  :GLSurfaceView(ctx), GLSurfaceView.Renderer 
             gpu.drawBufferedTriangles(0, 3)
             gpu.setUniform4FloatArray(refUColour, yellow)
             gpu.drawBufferedTriangles(3, 3)
+            gpu.setUniform4FloatArray(refUColour, blue)
+            gpu.drawBufferedTriangles(6, 3)
+            gpu.setUniform4FloatArray(refUColour, green)
+            gpu.drawBufferedTriangles(9, 3)
         }
     }
 
@@ -87,5 +102,9 @@ class OpenGLView(val ctx: Context)  :GLSurfaceView(ctx), GLSurfaceView.Renderer 
         if(refUProjMtx > -1) {
             gpu.sendMatrix(refUProjMtx, projMatrix)
         }
+    }
+
+    fun setOrientMtx(oMtx: FloatArray) {
+        // TODO complete
     }
 }

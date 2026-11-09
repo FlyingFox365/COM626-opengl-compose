@@ -1,11 +1,7 @@
 package freemap.openglwrapper
 
 import android.content.res.AssetManager
-import android.graphics.BitmapFactory
-import android.graphics.SurfaceTexture
-import android.opengl.GLES11Ext.GL_TEXTURE_EXTERNAL_OES
 import android.opengl.GLES20
-import android.opengl.GLUtils
 import android.util.Log
 
 import java.nio.Buffer
@@ -33,8 +29,8 @@ class GPUInterface(val id: String="DefaultGPUInterface")  {
         private set
 
     fun loadShaders(am: AssetManager, vertexShaderFile: String, fragmentShaderFile: String): Boolean {
-        val vertexShaderSrc = OpenGLUtils.loadShader(am, vertexShaderFile)
-        val fragmentShaderSrc = OpenGLUtils.loadShader(am, fragmentShaderFile)
+        val vertexShaderSrc = OpenGLUtils.loadTextAsset(am, vertexShaderFile)
+        val fragmentShaderSrc = OpenGLUtils.loadTextAsset(am, fragmentShaderFile)
         Log.d("OpenGLWrapper.GPUInterface", vertexShaderSrc)
         Log.d("OpenGLWrapper.GPUInterface", fragmentShaderSrc)
         return compileAndLinkShaders(vertexShaderSrc, fragmentShaderSrc)
