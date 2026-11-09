@@ -15,35 +15,24 @@ class GLMatrix(val values: FloatArray = floatArrayOf(1f,0f,0f,0f,0f,1f,0f,0f,0f,
         Matrix.perspectiveM(values, 0, hFov/aspect, aspect, near, far)
     }
 
-    fun translate(dx: Float, dy: Float, dz: Float) {
+    fun applyTranslationMatrix(dx: Float, dy: Float, dz: Float) {
         Matrix.translateM(values, 0, dx, dy, dz)
     }
 
-    fun rotate(angle: Float, x: Float, y: Float, z: Float) {
+    fun applyRotationMatrix(angle: Float, x: Float, y: Float, z: Float) {
         Matrix.rotateM(values, 0, angle, x, y, z)
     }
 
     fun rotateAboutAxis(angle: Float, axis: Char) : Boolean {
         axes[axis]?.apply {
-            rotate(angle, this[0], this[1], this[2])
+            applyRotationMatrix(angle, this[0], this[1], this[2])
             return true
         }
         return false
     }
 
     fun rotateAboutY(angle: Float) {
-        rotate(angle, 1.0f, 0.0f, 0.0f)
-    }
-
-    fun correctSensorMatrix() {
-        val correctionMatrix = GLMatrix(floatArrayOf(
-            1f, 0f, 0f, 0f,
-            0f, 0f, 1f, 0f,
-            0f, -1f, 0f, 0f,
-            0f, 0f, 0f, 1f
-        ))
-
-        multiply(correctionMatrix)
+        applyRotationMatrix(angle, 1.0f, 0.0f, 0.0f)
     }
 
     fun multiply(right: GLMatrix) {

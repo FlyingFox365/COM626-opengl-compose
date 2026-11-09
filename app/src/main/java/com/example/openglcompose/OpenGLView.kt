@@ -5,6 +5,7 @@ import android.content.Context
 import javax.microedition.khronos.egl.EGLConfig
 import android.opengl.GLES20
 import android.util.Log
+import freemap.openglwrapper.GLMatrix
 import javax.microedition.khronos.opengles.GL10
 import freemap.openglwrapper.GPUInterface
 import freemap.openglwrapper.OpenGLUtils
@@ -18,6 +19,13 @@ class OpenGLView(val ctx: Context)  :GLSurfaceView(ctx), GLSurfaceView.Renderer 
 
     lateinit var gpu: GPUInterface
     var refUColour = -1
+    var refUViewMtx = -1
+    var refUProjMtx = -1
+    val red = floatArrayOf(1.0f, 0.0f, 0.0f, 1.0f)
+    val yellow = floatArrayOf(1.0f, 1.0f, 0.0f, 1.0f)
+
+    val viewMatrix = GLMatrix()
+    val projMatrix = GLMatrix()
 
     // We initialise the rendering here
     override fun onSurfaceCreated(unused: GL10, config: EGLConfig) {
@@ -35,15 +43,20 @@ class OpenGLView(val ctx: Context)  :GLSurfaceView(ctx), GLSurfaceView.Renderer 
                 Log.e("OpenGL01", gpu.lastShaderError)
             } else {
                 val coords = floatArrayOf (
-                    0f, 0f, 0f,
-                    1f, 0f, 0f,
-                    0f, 1f, 0f,
+                    0f, 0f,-3f,
+                    1f, 0f, -3f,
+                    0.5f, 1f, -3f,
+                    -0.5f, 0f, -6f,
+                    0.5f, 0f, -6f,
+                    0f, 1f, -6f
                         )
                 val fbuf = OpenGLUtils.makeFloatBuffer(coords)
 
                 val refAVertex = gpu.getAttribLocation("aVertex")
                 gpu.specifyBufferedDataFormat(refAVertex, fbuf, 0)
                 refUColour = gpu.getUniformLocation("uColour")
+                refUViewMtx = gpu.getUniformLocation("uViewMtx")
+                refUProjMtx = gpu.getUniformLocation("uProjMtx")
                
             }
         } catch (e: IOException) {
@@ -55,17 +68,24 @@ class OpenGLView(val ctx: Context)  :GLSurfaceView(ctx), GLSurfaceView.Renderer 
     override fun onDrawFrame(unused: GL10) {
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT or GLES20.GL_DEPTH_BUFFER_BIT)
 
-        if(refUColour >= 0) {
+        viewMatrix.setAsIdentityMatrix()
+        gpu.sendMatrix(refUViewMtx, viewMatrix)
 
-            val red = floatArrayOf(1.0f, 0.0f, 0.0f, 1.0f)
+        if(refUColour >= 0) {
             gpu.setUniform4FloatArray(refUColour, red)
             gpu.drawBufferedTriangles(0, 3)
-
+            gpu.setUniform4FloatArray(refUColour, yellow)
+            gpu.drawBufferedTriangles(3, 3)
         }
     }
 
     // Used if the screen is resized
     override fun onSurfaceChanged(unused: GL10, w: Int, h: Int) {
         GLES20.glViewport(0, 0, w, h)
+        val aspect = w.toFloat() / h
+        projMatrix.setProjectionMatrix(60f, aspect, 0.001f, 1000f)
+        if(refUProjMtx > -1) {
+            gpu.sendMatrix(refUProjMtx, projMatrix)
+        }
     }
 }
