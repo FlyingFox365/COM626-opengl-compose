@@ -42,7 +42,11 @@ class OpenGLView(val ctx: Context)  :GLSurfaceView(ctx), GLSurfaceView.Renderer 
 
         gpu = GPUInterface("mainGpu")
         try {
-            if(!gpu.loadShaders(ctx.assets, "vertex.glsl", "fragment.glsl")) {
+            if(!gpu.loadShaders(
+                    ctx.assets,
+                    "vertex.glsl",
+                    "fragment.glsl"
+            )) {
                 Log.e("OpenGL01", gpu.lastShaderError)
             } else {
                 // Four triangles, two (red and yellow) towards negative z, two (blue and green) towards positive z

@@ -24,7 +24,7 @@ class MainActivity : ComponentActivity(), SensorEventListener {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         // Set to true on the Lenovo tablets (no magnetometer) or false on devices with a magnetometer
-        val useGameSensor = true
+        val useGameSensor = false
         setContent {
             OpenGLComposeTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
@@ -42,10 +42,22 @@ class MainActivity : ComponentActivity(), SensorEventListener {
         val gameSensor = sensorManager.getDefaultSensor(Sensor.TYPE_GAME_ROTATION_VECTOR)
 
         if(useGameSensor) {
-            sensorManager.registerListener(this, gameSensor, SensorManager.SENSOR_DELAY_UI)
+            sensorManager.registerListener(
+                this,
+                gameSensor,
+                SensorManager.SENSOR_DELAY_UI
+            )
         } else {
-            sensorManager.registerListener(this, accelSensor, SensorManager.SENSOR_DELAY_UI)
-            sensorManager.registerListener(this, magFieldSensor, SensorManager.SENSOR_DELAY_UI)
+            sensorManager.registerListener(
+                this,
+                accelSensor,
+                SensorManager.SENSOR_DELAY_UI
+            )
+            sensorManager.registerListener(
+                this,
+                magFieldSensor,
+                SensorManager.SENSOR_DELAY_UI
+            )
         }
     }
 
@@ -54,8 +66,12 @@ class MainActivity : ComponentActivity(), SensorEventListener {
             Sensor.TYPE_ACCELEROMETER -> {
                 viewModel.accelValues.value = ev.values.clone()
                 val orientMtx = FloatArray(16)
-                SensorManager.getRotationMatrix(orientMtx, null, viewModel.accelValues.value,
-                    viewModel.magFieldValues.value)
+                SensorManager.getRotationMatrix(
+                    orientMtx,
+                    null,
+                    viewModel.accelValues.value,
+                    viewModel.magFieldValues.value
+                )
                 viewModel.orientMtx.value = orientMtx.clone()
             }
 
