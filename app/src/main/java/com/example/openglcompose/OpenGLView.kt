@@ -29,6 +29,16 @@ class OpenGLView(val ctx: Context)  :GLSurfaceView(ctx), GLSurfaceView.Renderer 
     val viewMatrix = GLMatrix()
     val projMatrix = GLMatrix()
 
+    val correctioMatrixValues = floatArrayOf(
+        1f, 0f, 0f, 0f,
+        0f, 0f, 1f, 0f,
+        0f, -1f, 0f, 0f,
+        0f, 0f, 0f, 1f
+    )
+
+    val correctionMatrix = GLMatrix()
+    val sensorMatrix = GLMatrix()
+
 
     // We initialise the rendering here
     override fun onSurfaceCreated(unused: GL10, config: EGLConfig) {
@@ -83,6 +93,7 @@ class OpenGLView(val ctx: Context)  :GLSurfaceView(ctx), GLSurfaceView.Renderer 
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT or GLES20.GL_DEPTH_BUFFER_BIT)
 
         viewMatrix.setAsIdentityMatrix()
+        viewMatrix.multiply(sensorMatrix)
 
         gpu.sendMatrix(refUViewMtx, viewMatrix)
 
@@ -109,6 +120,11 @@ class OpenGLView(val ctx: Context)  :GLSurfaceView(ctx), GLSurfaceView.Renderer 
     }
 
     fun setOrientMtx(oMtx: FloatArray) {
-        // TODO complete
+      //  sensorMatrix.setAsIdentityMatrix()
+        //sensorMatrix.multiply(oMtx)
+        correctionMatrix.values = correctioMatrixValues
+        sensorMatrix.values = oMtx.clone()
+        sensorMatrix.multiply(correctionMatrix)
+
     }
 }
